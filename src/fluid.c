@@ -46,10 +46,10 @@ void fluid_draw(char* data) {
                 if (color < 0) color = 0;
                 if (color > 255) color = 255;*/
                 int cu = field[y][x].u * 255;
-                if (cu < 0) cu = 0;
+                if (cu < 0) cu = -cu;
                 if (cu > 255) cu = 255;
                 int cv = field[y][x].v * 255;
-                if (cv < 0) cv = 0;
+                if (cv < 0) cv = -cv;
                 if (cv > 255) cv = 255;
 
                 data[index + 1] = cu;
