@@ -33,6 +33,9 @@ int main() {
 
     bool quit = false;
     SDL_Event e;
+
+    fluid_init();
+
     last_time = SDL_GetTicksNS();
 
     while (!quit) {
