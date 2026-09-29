@@ -1,11 +1,16 @@
 #define SDL_MAIN_HANDLED
 #include <SDL3/SDL.h>
 
+#include "fluid.h"
+
 #define FRAME_WIDTH (960)
 #define FRAME_HEIGHT (720)
 
 SDL_Renderer* renderer;
 SDL_Window* window;
+SDL_Texture* frame_texture;
+
+Uint64 last_time = 0;
 
 int main() {
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
@@ -23,9 +28,12 @@ int main() {
     }
 
     renderer = SDL_CreateRenderer(window, NULL);
+    frame_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, FIELD_WIDTH, FIELD_HEIGHT);
+    SDL_SetTextureScaleMode(frame_texture, SDL_SCALEMODE_NEAREST);
 
     bool quit = false;
     SDL_Event e;
+    last_time = SDL_GetTicksNS();
 
     while (!quit) {
         while (SDL_PollEvent(&e) != 0) {
@@ -45,8 +53,19 @@ int main() {
             }
         }
 
+        Uint64 dt = SDL_GetTicksNS() - last_time;
+        fluid_update(((float)dt) / 1.0e9);
+        last_time = SDL_GetTicksNS();
+
+        void* texture_data;
+        int pitch;
+        SDL_LockTexture(frame_texture, NULL, &texture_data, &pitch);
+        fluid_draw(texture_data);
+        SDL_UnlockTexture(frame_texture);
+
         SDL_SetRenderDrawColor(renderer, 70, 100, 140, 255);
         SDL_RenderClear(renderer);
+        SDL_RenderTexture(renderer, frame_texture, NULL, NULL);
         SDL_RenderPresent(renderer);
     }
 
