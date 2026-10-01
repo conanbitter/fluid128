@@ -1,8 +1,8 @@
 #ifndef FLUID_H
 #define FLUID_H
 
-#define FIELD_WIDTH (80)
-#define FIELD_HEIGHT (60)
+#define FIELD_WIDTH (160)
+#define FIELD_HEIGHT (120)
 
 void fluid_init();
 void fluid_draw(char* data);

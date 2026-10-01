@@ -65,9 +65,9 @@ void fluid_draw(char* data) {
                 if (cv < 0) cv = -cv;
                 if (cv > 255) cv = 255;
 
-                data[index + 1] = cu;
+                data[index + 1] = color;//cu;
                 data[index + 2] = color;
-                data[index + 3] = cv;
+                data[index + 3] = color;//cv;
                 //data[index + 1] = color;
                 //data[index + 2] = color;
                 //data[index + 3] = color;
@@ -166,7 +166,7 @@ float sample_smoke(float x, float y) {
 void advect_velocity(float dt) {
     for (int y = 0;y < FIELD_HEIGHT;y++) {
         for (int x = 0;x < FIELD_WIDTH;x++) {
-            if (x == 0 || y == 0 || x <= FIELD_WIDTH - 1 || y <= FIELD_HEIGHT - 1) {
+            if (x == 0 || y == 0 || x >= FIELD_WIDTH - 1 || y >= FIELD_HEIGHT - 1) {
                 field[y][x].new_u = field[y][x].u;
                 field[y][x].new_v = field[y][x].v;
                 continue;
@@ -225,6 +225,6 @@ void advect_smoke(float dt) {
 
 void fluid_update(float dt) {
     incompress();
-    advect_velocity(dt * 100.0f);
-    advect_smoke(dt * 100.0f);
+    advect_velocity(dt * 1000.0f);
+    advect_smoke(dt * 1000.0f);
 }
