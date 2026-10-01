@@ -30,9 +30,15 @@ void fluid_init() {
         }
     }
 
+    float cx = TUBE_MIN * 1.5f;
+    float cy = (TUBE_MAX + TUBE_MIN) / 2.0f;
+    float r = (TUBE_MAX - TUBE_MIN) / 2.0f;
+    float r2 = r * r;
+
     for (int y = TUBE_MIN;y < TUBE_MAX;y++) {
         for (int x = TUBE_MIN;x < TUBE_MIN * 2;x++) {
-            field[y][x].fluid = 0;
+            float d2 = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+            if (d2 < r2) field[y][x].fluid = 0;
         }
     }
 }
@@ -100,10 +106,10 @@ float avg_u(int x, int y) {
 }
 
 float avg_v(int x, int y) {
-    return (field[y][x].u +
-        field[y][x - 1].u +
-        field[y + 1][x].u +
-        field[y + 1][x - 1].u) / 4.0f;
+    return (field[y][x].v +
+        field[y][x - 1].v +
+        field[y + 1][x].v +
+        field[y + 1][x - 1].v) / 4.0f;
 }
 
 float sample_u(float x, float y) {
@@ -160,7 +166,7 @@ float sample_smoke(float x, float y) {
 void advect_velocity(float dt) {
     for (int y = 0;y < FIELD_HEIGHT;y++) {
         for (int x = 0;x < FIELD_WIDTH;x++) {
-            if (x == 0 || y == 0 || x == FIELD_WIDTH - 1 || y == FIELD_HEIGHT - 1) {
+            if (x == 0 || y == 0 || x <= FIELD_WIDTH - 1 || y <= FIELD_HEIGHT - 1) {
                 field[y][x].new_u = field[y][x].u;
                 field[y][x].new_v = field[y][x].v;
                 continue;
@@ -193,7 +199,7 @@ void advect_velocity(float dt) {
     for (int y = 0;y < FIELD_HEIGHT;y++) {
         for (int x = 0;x < FIELD_WIDTH;x++) {
             field[y][x].u = field[y][x].new_u;
-            //field[y][x].v = field[y][x].new_v;
+            field[y][x].v = field[y][x].new_v;
         }
     }
 }
@@ -219,6 +225,6 @@ void advect_smoke(float dt) {
 
 void fluid_update(float dt) {
     incompress();
-    advect_velocity(dt);
+    advect_velocity(dt * 100.0f);
     advect_smoke(dt * 100.0f);
 }
